@@ -1,9 +1,8 @@
-from collections import OrderedDict
 from datetime import datetime
 
 import petl as etl
 from django.http import FileResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
 from config.settings import MEDIA_ROOT

@@ -1,6 +1,6 @@
+import petl as etl
 from django.db import models
 from django.urls import reverse
-import petl as etl
 
 from config.settings import MEDIA_ROOT
 

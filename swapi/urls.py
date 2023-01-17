@@ -1,6 +1,7 @@
 from django.urls import path
 
-from swapi.views import CollectionDetailView, CollectionListView, download_csv, value_count
+from swapi.views import (CollectionDetailView, CollectionListView,
+                         download_csv, value_count)
 
 urlpatterns = [
     path('', CollectionListView.as_view(), name='collection-list'),
