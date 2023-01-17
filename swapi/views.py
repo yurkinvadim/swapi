@@ -1,8 +1,9 @@
+from collections import OrderedDict
 from datetime import datetime
 
 import petl as etl
 from django.http import FileResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 
 from config.settings import MEDIA_ROOT
@@ -57,20 +58,31 @@ class CollectionDetailView(View):
         }
         return render(request, 'swapi/collection_detail.html', context=context)
 
-    # def post(self, request, pk):
-    #     collection = Collection.objects.get(pk=pk)
-    #     table = collection.table
-    #
-    #     people = table.head(n=10).dicts()
-    #
-    #     context = {
-    #         'collection': collection,
-    #         'people': people,
-    #     }
-    #     return render(request, 'swapi/collection_detail.html', context=context)
-
 
 def download_csv(request, pk):
     collection = Collection.objects.get(pk=pk)
     filename = collection.filename
     return FileResponse(open(f'{MEDIA_ROOT}/{filename}', 'rb'))
+
+
+def value_count(request, pk):
+    if request.method == 'GET':
+        return redirect('collection-detail', pk=pk)
+
+    if request.method == 'POST':
+        fields = tuple(field for field in request.POST.keys() if field != 'csrfmiddlewaretoken')
+
+        if not fields:
+            return redirect('collection-detail', pk=pk)
+
+        collection = get_object_or_404(Collection, pk=pk)
+
+        table = collection.table
+        table = etl.aggregate(table, fields, aggregation=len)
+        headers = etl.header(table)
+        data = etl.data(table)
+        context = {
+            'data': data,
+            'headers': headers,
+        }
+        return render(request, 'swapi/value_count.html', context=context)
