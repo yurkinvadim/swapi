@@ -31,7 +31,6 @@ class StarWarsAPI:
                         'gender': person.get('gender'),
                         'homeworld': person.get('homeworld'),
                         'edited': person.get('edited'),
-                        'url': person.get('url'),
 
                     } for person in data.get('results')
                 ]
@@ -67,7 +66,6 @@ class StarWarsAPI:
                 'gender',
                 'homeworld',
                 'edited',
-                'url'
             ]
         )
 

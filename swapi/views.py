@@ -2,7 +2,7 @@ from datetime import datetime
 
 import petl as etl
 from django.http import FileResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 
 from config.settings import MEDIA_ROOT
@@ -45,11 +45,29 @@ class CollectionListView(View):
 
 class CollectionDetailView(View):
     def get(self, request, pk):
-        collection = Collection.objects.get(pk=pk)
+        collection = get_object_or_404(Collection, pk=pk)
+        table = collection.table
+        number_of_people = int(request.GET.get('n', 10))
+        people = table.head(n=number_of_people).dicts()
+
         context = {
-            'collection': collection
+            'collection': collection,
+            'people': people,
+            'n': number_of_people,
         }
         return render(request, 'swapi/collection_detail.html', context=context)
+
+    # def post(self, request, pk):
+    #     collection = Collection.objects.get(pk=pk)
+    #     table = collection.table
+    #
+    #     people = table.head(n=10).dicts()
+    #
+    #     context = {
+    #         'collection': collection,
+    #         'people': people,
+    #     }
+    #     return render(request, 'swapi/collection_detail.html', context=context)
 
 
 def download_csv(request, pk):
